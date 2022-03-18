@@ -686,7 +686,7 @@
 
 ### Differences between Functions and Logic Apps
 
-[comment]: <> (prettier-ignore)
+
 | Property | Functions | Logic Apps |
 |---|---|---|
 | State | Normally stateless, but Durable Functions provide state. | Stateful |
@@ -697,7 +697,7 @@
 | Management | REST API, PowerShell, Visual Studio | Azure portal, REST API, PowerShell, Visual Studio |
 | Execution Context | Can run locally or in the cloud | Runs only in the cloud |
 
-### Azure Virtual Desktop
+## Azure Virtual Desktop
 
 - Azure Virtual Desktop is a desktop and application virtualization service that runs on the cloud
 - enables your users to use a cloud-hosted version of Windows from any location
@@ -739,3 +739,184 @@
 - Save on compute costs
   - Buy one-year or three-year Azure Reserved Virtual Machine Instances to save you up to 72 percent versus pay-as-you-go pricing
   - You can pay for a reservation up front or monthly. Reservations provide a billing discount and don't affect the runtime state of your resources
+
+## Azure Virtual Network fundamentals
+
+- Azure virtual networks enable Azure resources, such as VMs, web apps, and databases, to communicate with each other, with users on the internet, and with your on-premises client computers
+- think of an Azure network as an extension of your on-premises network with resources that links other Azure resources
+- Azure virtual networks provide the following key networking capabilities
+  1. Isolation and segmentation
+  - Allows you to create multiple isolated virtual networks
+  - When you set up a virtual network, you define a private IP address space by using either public or private IP address ranges.
+  - The public IP range only exist within the virtual network and is not internet routable
+  - For name resolution, you can use the name resolution service that's built in to Azure
+  - You also can configure the virtual network to use either an internal or an external DNS server.
+  2. Internet communications
+  - A VM in Azure can connect to the internet by default
+  - Enable incoming connections from the internet by assigning a public IP address to the VM or putting the VM behind a public load balancer
+  - For VM management, you can connect via the Azure CLI, Remote Desktop Protocol, or Secure Shell
+  3. Communicate between Azure resources
+  - There are 2 Ways to enable Azure resources to communicate securely with each other
+    1. **_Virtual networks_** can connect not only VMs but other Azure resources, such as the App Service Environment for Power Apps, Azure Kubernetes Service, and Azure virtual machine scale sets
+    2. You can use **_service endpoints_** to connect to other Azure resource types, such as Azure SQL databases and storage accounts
+    - This approach enables you to link multiple Azure resources to virtual networks to improve security and provide optimal routing between resources
+  4. Communicate with on-premises resources
+  - you can create a network that spans both your local and cloud environments. There are three mechanisms for you to achieve this connectivity:
+    1. **_Point-to-site virtual private networks_** The typical approach to a virtual private network (VPN) connection is from a computer outside your organization, back into your corporate network
+    2. A **_Site-to-site virtual private networks_** links your on-premises VPN device or gateway to the Azure VPN gateway in a virtual network
+    3. **_Azure ExpressRoute_** For environments where you need greater bandwidth and even higher levels of security, Azure ExpressRoute is the best approach
+    - ExpressRoute provides a dedicated private connectivity to Azure that doesn't travel over the interne
+  5. Route network traffic
+  - By default, Azure routes traffic between subnets on any connected virtual networks, on-premises networks, and the internet
+  - You also can control routing and override those settings, as follows:
+    1.  A **_route table_** allows you to define rules about how traffic should be directed. You can create custom route tables that control how packets are routed between subnets
+    2.  **_Border Gateway Protocol_** (BGP) works with Azure VPN gateways, Azure Route Server, or ExpressRoute to propagate on-premises BGP routes to Azure virtual networks
+  6. Filter network traffic
+  - Azure virtual networks enable you to filter traffic between subnets by using the following approaches:
+    1. A **_network security group_** is an Azure resource that can contain multiple inbound and outbound security rules
+    - You can define these rules to allow or block traffic, based on factors such as source and destination IP address, port, and protocol
+    2. A **_network virtual appliance_** is a specialized VM that can be compared to a hardened network appliance
+    - A network virtual appliance carries out a particular network function, such as running a firewall or performing wide area network (WAN) optimization
+  7. Connect virtual networks
+  - You can link virtual networks together by using virtual network peering
+    - Peering enables resources in each virtual network to communicate with each other
+    - These virtual networks can be in separate regions, which allows you to create a global interconnected network through Azure
+  - UDR is user-defined routes
+    - a significant update to Azure’s Virtual Networks as this allows network administrators to control the routing tables between subnets within a VNet, as well as between VNets, thereby allowing for greater control over network traffic flow
+- ![Virtual Networks](screenshots\local-or-remote-gateway-in-peered-virual-network-21106a38.png)
+
+### Azure Virtual Network settings
+
+- You can create and configure Azure virtual networks from the Azure portal, Azure PowerShell, Azure CLI, Azure Cloud Shell or an ARM template
+- Create a virtual network
+  - When you create an Azure virtual network, you configure a number of basic settings:
+    1. **Subscription** This option only applies if you have multiple subscriptions to choose from
+    2. **Resource group** Like any other Azure resource, a virtual network needs to exist in a resource group. You can either select an existing resource group or create a new one
+    3. **Network name** The network name must be unique in your subscription, but it doesn't need to be globally unique.
+    4. **Region** Select the region where you want the virtual network to exist
+    5. **Address space** When you set up a virtual network, you define the internal address space in Classless Interdomain Routing (CIDR) format
+      - This address space needs to be unique within your subscription and any other networks that you connect to
+    6. **Subnet** Within each virtual network address range, you can create one or more subnets that partition the virtual network's address space
+    7. **Service endpoints** Here, you enable service endpoints. Then you select from the list which Azure service endpoints you want to enable
+    8. **NAT gateway** A NAT gateway is a fully managed and higly resilient Network Address Translation (NAT) service
+      - You can configure a subnet to use a static outbound IP address when accessing the internet
+    9. **BastionHost** You can select to enable or disable Azure Bastion in your virtual network
+      - Azure Bastion service provides a secure and seamless RDP/SSH connectivity to your virtual machines directly in the Azure portal over SSL
+    10. **DDoS Protection Standard** You can select to enable or disable Standard DDoS protection
+      - The Standard DDoS protection is a premium service
+    11. **Firewall** You can enable or disable Azure Firewall
+      - Azure Firewall service is managed cloud-based network security service that protects your Azure Virtual Network resources
+- ![Create Virtual Network Settings](screenshots\create-virtual-network-security-286df13c.png)
+
+### Azure Virtual Network additional settings
+
+1. **Network security groups** have security rules that enable you to filter the type of network traffic that can flow in and out of virtual network subnets and network interfaces
+2. Azure automatically creates a **route table** for each subnet within an Azure virtual network and adds system default routes to the table
+
+- You can add custom route tables to modify traffic between subnets and virtual networks
+
+3. **Subnet Delegation** You can designate the subnet to be used by a dedicate service
+
+- ![Virtual Networks additional settings](screenshots\virtual-network-additional-settings-faff6cec.png)
+
+### Configure virtual networks
+
+- After you've created a virtual network, you can change any further settings on the Virtual network pane in the Azure porta
+- Alternatively, you can use PowerShell commands or commands in Cloud Shell to make changes
+- You can also monitor and view metrics to troubleshoot your virtual networks
+- ![Configure Virtual Network Settings](screenshots\configure-virtual-network-9d0515c5.png)
+
+## Azure VPN Gateway fundamentals
+
+- VPNs use an encrypted tunnel within another network
+- Typically deployed to connect two or more trusted private networks to one another over an untrusted network (typically the public internet). Traffic is encrypted while traveling over the untrusted network to prevent eavesdropping or other attacks
+
+### VPN Gateways
+
+- A VPN gateway is a type of virtual network gateway
+- All data transfer is encrypted inside a private tunnel as it crosses the internet
+- Azure VPN Gateway instances are deployed in a dedicated subnet of the virtual network and enable the following connectivity:
+  1. Connect on-premises datacenters to virtual networks through a site-to-site connection
+  2. Connect individual devices to virtual networks through a point-to-site connection
+  3. Connect virtual networks to other virtual networks through a network-to-network connection
+- You can deploy only one VPN gateway in each virtual network, but you can use one gateway to connect to multiple locations, which includes other virtual networks or on-premises datacenters
+- When you deploy a VPN gateway, you specify the VPN type: either **_policy-based_** or **_route-based_**
+- The main difference between these two types of VPNs is how traffic to be encrypted is specified
+  - **_Policy-based_** VPN gateways specify statically the IP address of packets that should be encrypted through each tunnel
+  - Key features of policy-based VPN gateways:
+    1. Support for IKEv1 only
+    2. Use of static routing, where combinations of address prefixes from both networks control how traffic is encrypted and decrypted through the VPN tunnel. The source and destination of the tunneled networks are declared in the policy and don't need to be declared in routing tables
+    3. Policy-based VPNs must be used in specific scenarios that require them, such as for compatibility with legacy on-premises VPN devices
+  - With **_Route-based VPNs_** IPSec tunnels are modeled as a network interface or virtual tunnel interface
+    - IP routing (either static routes or dynamic routing protocols) decides which one of these tunnel interfaces to use when sending each packet.
+  - Route-based VPNs are the preferred connection method for on-premises devices. They're more resilient to topology changes such as the creation of new subnets
+  - Key features of route-based VPN gateways
+    1. Supports IKEv2
+    2. Uses any-to-any (wildcard) traffic selectors
+    3. Can use dynamic routing protocols, where routing/forwarding tables direct traffic to different IPSec tunnels In this case, the source and destination networks aren't statically defined as they are in policy-based VPNs or even in route-based VPNs with static routing
+  - When to use Route-Based
+    1. Connections between virtual networks
+    2. Point-to-site connections
+    3. Multisite connections
+    4. Coexistence with an Azure ExpressRoute gateway
+
+### Deploy VPN gateways
+
+- Before you can deploy a VPN gateway, you'll need some Azure and on-premises resources
+  #### Required Azure Resources
+  
+  1. **Virtual network**. Deploy a virtual network with enough address space for the additional subnet that you'll need for the VPN gateway. The address space for this virtual network must not overlap with the on-premises network that you'll be connecting to
+  2. **GatewaySubnet**. Deploy a subnet called GatewaySubnet for the VPN gateway. Use at least a /27 address mask to make sure you have enough IP addresses in the subnet for future growth
+  3. **Public IP address**. Create a Basic-SKU dynamic public IP address if you're using a non-zone-aware gateway. This address provides a public-routable IP address as the target for your on-premises VPN device
+  4. **Local network gateway**. Create a local network gateway to define the on-premises network's configuration, such as where the VPN gateway will connect and what it will connect to. This configuration includes the on-premises VPN device's public IPv4 address and the on-premises routable networks
+  5. **Virtual network gateway**. Create the virtual network gateway to route traffic between the virtual network and the on-premises datacenter or other virtual networks.
+    - The virtual network gateway can be either a VPN or ExpressRoute gateway, but this unit only deals with VPN virtual network gateways
+  6. **Connection**. Create a connection resource to create a logical connection between the VPN gateway and the local network gateway
+    - The connection is made to the on-premises VPN device's IPv4 address as defined by the local network gateway
+    - The connection is made from the virtual network gateway and its associated public IP address
+- ![Azure Resources](screenshots\resource-requirements-for-vpn-gateway-2518703e.png)
+  #### Required On-Premises Resources
+  1. A VPN device that supports policy-based or route-based VPN gateways
+  2. A public-facing (internet-routable) IPv4 address
+
+  #### High-availability scenarios
+  - There are several ways to ensure you have a fault-tolerant configuration
+    1. **Active/standby**
+      - By default, VPN gateways are deployed as two instances in an active/standby configuration, even if you only see one VPN gateway resource in Azure
+      - When planned maintenance or unplanned disruption affects the active instance, the standby instance automatically assumes responsibility for connections without any user intervention
+    2. **Active/active**
+      - In this configuration, you assign a unique public IP address to each instance. You then create separate tunnels from the on-premises device to each IP address
+      - Extend the high availability by deploying an additional VPN device on-premises
+    3. **ExpressRoute failover**
+      - configure a VPN gateway as a secure failover path for ExpressRoute connections
+      - ExpressRoute circuits have resiliency built in. But they aren't immune to physical problems that affect the cables delivering connectivity or outages that affect the complete ExpressRoute location
+    4. **Zone-redundant gateways**
+      - This configuration brings resiliency, scalability, and higher availability to virtual network gateways
+      - Deploying gateways in Azure availability zones physically and logically separates gateways within a region while protecting your on-premises network connectivity to Azure from zone-level failures
+## Azure ExpressRoute fundamentals
+- lets you extend your on-premises networks into the Microsoft cloud over a private connection with the help of a connectivity provider
+- establish connections to Microsoft cloud services, such as Microsoft Azure and Microsoft 365
+- Connectivity can be from an any-to-any (IP VPN) network, a point-to-point Ethernet network, or a virtual cross-connection through a connectivity provider at a colocation facility
+- connections don't go over the public Internet. This allows ExpressRoute connections to offer more reliability, faster speeds, consistent latencies, and higher security than typical connections over the Internet
+
+### Benefits of ExpressRoute
+1. Layer 3 connectivity between your on-premises network and the Microsoft Cloud through a connectivity provider
+  - Connectivity can be from an any-to-any (IPVPN) network, a point-to-point Ethernet connection, or through a virtual cross-connection via an Ethernet exchange
+2. Connectivity to Microsoft cloud services across all regions in the geopolitical region
+3. Global connectivity to Microsoft services across all regions with the ExpressRoute premium add-on.
+4. Dynamic routing between your network and Microsoft via BGP
+5. Built-in redundancy in every peering location for higher reliability
+6. Connection uptime SLA
+7. QoS support for Skype for Business
+
+### ExpressRoute connectivity models
+1. CloudExchange colocation
+  - Colocated providers can normally offer both Layer 2 and Layer 3 connections between your infrastructure, which might be located in the colocation facility, and the Microsoft cloud
+2. Point-to-point Ethernet connection
+  - Point-to-point connections provide Layer 2 and Layer 3 connectivity between your on-premises site and Azure
+3. Any-to-any connection
+  - With any-to-any connectivity, you can integrate your wide area network (WAN) with Azure by providing connections to your offices and datacenters
+4. Directly from ExpressRoute sites
+  - You can connect directly into the Microsoft's global network at a peering location strategically distributed across the world
+### Security considerations
+- With ExpressRoute, your data doesn't travel over the public internet, so it's not exposed to the potential risks associated with internet communications. ExpressRoute is a private connection from your on-premises infrastructure to your Azure infrastructure. Even if you have an ExpressRoute connection, DNS queries, certificate revocation list checking, and Azure Content Delivery Network requests are still sent over the public internet
